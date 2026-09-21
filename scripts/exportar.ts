@@ -9,7 +9,7 @@
 //     Todas las variables sin agrupar. No se comparte ni se sube a ningun sitio.
 import { writeFileSync } from "node:fs";
 import postgres from "postgres";
-import { BLOQUES, CCAA_INE, CCAA_POR_PROVINCIA, type Respuestas } from "../lib/encuesta.ts";
+import { BLOQUES, ZONA_MACRO, type Respuestas } from "../lib/encuesta.ts";
 
 const K = 5;
 const CUASI = ["A7", "A3", "A4", "A6"] as const; // lo que un tercero podria saber de una familia: zona, edad, sexo, centro
@@ -53,11 +53,10 @@ export function aplanar(datos: Record<string, Respuestas>, meta: { canal: number
 }
 
 // Generalizaciones sucesivas hasta cumplir k-anonimato.
-// La zona (A7) se guarda por provincia (codigo INE 01-52): primero se agrupa por comunidad (CA + codigo INE de
-// comunidad, con prefijo para no confundirlo con un codigo de provincia) y luego en Madrid, Andalucia, Cataluna y otras.
+// La zona (A7, codigo INE de comunidad 01-19) se agrupa en las 7 macrozonas NUTS1 de Eurostat: el mismo criterio
+// oficial para las 19 comunidades. Si aun asi hay menos de k, el ultimo recurso es suprimir la zona.
 const PASOS: { col: string; mapa: Record<string, string> }[] = [
-  { col: "A7", mapa: Object.fromEntries(Object.entries(CCAA_POR_PROVINCIA).map(([p, c]) => [p, `CA${c}`])) },
-  { col: "A7", mapa: Object.fromEntries(Object.keys(CCAA_INE).map((c) => [`CA${c}`, ["13", "01", "09"].includes(c) ? `CA${c}` : "otras"])) },
+  { col: "A7", mapa: ZONA_MACRO },
   { col: "A6", mapa: { publico: "publico", concertado: "concertado_privado", privado: "concertado_privado", ns: "ns" } },
 ];
 

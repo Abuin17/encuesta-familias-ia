@@ -212,7 +212,8 @@ export default function Encuesta() {
     return (
       <main>
         <h1 ref={tituloRef} tabIndex={-1}>Familias e inteligencia artificial</h1>
-        <p>Queremos entender cómo usan la IA los chicos y chicas de 8 a 17 años y qué preocupa a sus familias. Son unos 8 minutos.</p>
+        <p>Cada vez más chicos y chicas usan la inteligencia artificial para estudiar y en su día a día, y muchas familias no saben bien qué pensar ni qué hacer. Queremos escuchar a padres y madres para entender qué está pasando de verdad y qué os preocupa.</p>
+        <p>No hay respuestas buenas ni malas, y esta encuesta no te pide comprar ni contratar nada. Lo que aprendamos nos ayudará a diseñar mejor lo que hacemos con familias y centros educativos. Son unos 8 minutos.</p>
         <p><strong>Es anónima.</strong> No te pedimos nombre, email ni teléfono, y no guardamos tu dirección IP.</p>
 
         <details className="tarjeta aviso">

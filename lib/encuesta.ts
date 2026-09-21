@@ -30,10 +30,10 @@ export type Pregunta = {
 
 export type Bloque = { id: "A" | "B" | "C" | "D" | "E"; titulo: string; intro?: string; preguntas: Pregunta[] };
 
-// ---- Zona: comunidades autonomas y provincias ------------------------------------------------
+// ---- Zona: comunidades y ciudades autonomas -------------------------------------------------
 // Fuente oficial: INE, «Relación de municipios y códigos por comunidades autónomas y provincias a 1 de
-// enero de 2026» (https://www.ine.es/daco/daco42/codmun/diccionario26.xlsx) y sus listas de códigos de
-// provincias y de comunidades y ciudades autónomas (https://www.ine.es/daco/daco42/codmun/).
+// enero de 2026» (https://www.ine.es/daco/daco42/codmun/diccionario26.xlsx) y su lista de códigos de
+// comunidades y ciudades autónomas (https://www.ine.es/daco/daco42/codmun/cod_ccaa.htm).
 // Los literales van tal como los publica el INE, que los invierte para poder ordenarlos («Balears, Illes»).
 // tests/ine-2026.json guarda una copia de la fuente y los tests comprueban que esta tabla coincide con ella.
 export const CCAA_INE: Record<string, string> = {
@@ -58,62 +58,6 @@ export const CCAA_INE: Record<string, string> = {
   "19": "Melilla",
 };
 
-// [codigo de provincia, literal INE, codigo de comunidad INE]
-export const PROVINCIAS_INE: [string, string, string][] = [
-  ["01", "Araba/Álava", "16"],
-  ["02", "Albacete", "08"],
-  ["03", "Alicante/Alacant", "10"],
-  ["04", "Almería", "01"],
-  ["05", "Ávila", "07"],
-  ["06", "Badajoz", "11"],
-  ["07", "Balears, Illes", "04"],
-  ["08", "Barcelona", "09"],
-  ["09", "Burgos", "07"],
-  ["10", "Cáceres", "11"],
-  ["11", "Cádiz", "01"],
-  ["12", "Castellón/Castelló", "10"],
-  ["13", "Ciudad Real", "08"],
-  ["14", "Córdoba", "01"],
-  ["15", "Coruña, A", "12"],
-  ["16", "Cuenca", "08"],
-  ["17", "Girona", "09"],
-  ["18", "Granada", "01"],
-  ["19", "Guadalajara", "08"],
-  ["20", "Gipuzkoa", "16"],
-  ["21", "Huelva", "01"],
-  ["22", "Huesca", "02"],
-  ["23", "Jaén", "01"],
-  ["24", "León", "07"],
-  ["25", "Lleida", "09"],
-  ["26", "Rioja, La", "17"],
-  ["27", "Lugo", "12"],
-  ["28", "Madrid", "13"],
-  ["29", "Málaga", "01"],
-  ["30", "Murcia", "14"],
-  ["31", "Navarra", "15"],
-  ["32", "Ourense", "12"],
-  ["33", "Asturias", "03"],
-  ["34", "Palencia", "07"],
-  ["35", "Palmas, Las", "05"],
-  ["36", "Pontevedra", "12"],
-  ["37", "Salamanca", "07"],
-  ["38", "Santa Cruz de Tenerife", "05"],
-  ["39", "Cantabria", "06"],
-  ["40", "Segovia", "07"],
-  ["41", "Sevilla", "01"],
-  ["42", "Soria", "07"],
-  ["43", "Tarragona", "09"],
-  ["44", "Teruel", "02"],
-  ["45", "Toledo", "08"],
-  ["46", "Valencia/València", "10"],
-  ["47", "Valladolid", "07"],
-  ["48", "Bizkaia", "16"],
-  ["49", "Zamora", "07"],
-  ["50", "Zaragoza", "02"],
-  ["51", "Ceuta", "18"],
-  ["52", "Melilla", "19"],
-];
-
 const sinTildes = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 const porLiteral = (a: string, b: string) => { const x = sinTildes(a), y = sinTildes(b); return x < y ? -1 : x > y ? 1 : 0; };
 
@@ -122,29 +66,27 @@ export function nombreNatural(literalIne: string): string {
   return literalIne.replace(/ - /g, "-").split(", ").reverse().join(" ");
 }
 
-export const CCAA_POR_PROVINCIA: Record<string, string> = Object.fromEntries(PROVINCIAS_INE.map(([p, , c]) => [p, c]));
+// Opciones de A7: las 19 comunidades y ciudades autonomas, todas tratadas igual y en orden alfabetico segun el
+// literal del INE, para que cada persona encuentre la suya bajo su nombre (Asturias, Baleares/Balears, Madrid, Murcia...).
+export const OPCIONES_CCAA: Opcion[] = Object.entries(CCAA_INE)
+  .sort((a, b) => porLiteral(a[1], b[1]))
+  .map(([v, literal]) => ({ v, t: nombreNatural(literal) }));
 
-// Opciones del desplegable de provincia, por comunidad (ordenadas como en el INE) y, dentro, por provincia.
-// Si la comunidad tiene una sola provincia se muestra una unica opcion con el nombre de la comunidad:
-// asi no aparece nunca «Asturias > Asturias» ni «Illes Balears > Illes Balears». El valor guardado es siempre la provincia.
-function opcionesProvincia(): Opcion[] {
-  const out: Opcion[] = [];
-  for (const [cod, literal] of Object.entries(CCAA_INE).sort((a, b) => porLiteral(a[1], b[1]))) {
-    const provs = PROVINCIAS_INE.filter((p) => p[2] === cod).sort((a, b) => porLiteral(a[1], b[1]));
-    if (provs.length === 1) out.push({ v: provs[0][0], t: nombreNatural(literal) });
-    else for (const [v, l] of provs) out.push({ v, t: nombreNatural(l), grupo: nombreNatural(literal) });
-  }
-  return out;
-}
-export const OPCIONES_PROVINCIA = opcionesProvincia();
-
-// Las cuotas de zona de la base de datos (A7) siguen siendo las 6 macrozonas de siempre.
-// Se calculan desde la provincia, asi las cuotas no cambian aunque se pregunte por provincia.
-const ZONA_DE_CCAA: Record<string, string> = {
-  "13": "madrid", "01": "andalucia", "09": "cataluna", "10": "valencia",
-  "12": "norte", "03": "norte", "06": "norte", "16": "norte", "15": "norte", "17": "norte", "07": "norte", "02": "norte",
-  "08": "resto", "11": "resto", "14": "resto", "04": "resto", "05": "resto", "18": "resto", "19": "resto",
+// Macrozonas para las cuotas y para anonimizar la exportacion: las 7 regiones NUTS1 de Eurostat, el mismo criterio
+// oficial para las 19 comunidades (no se elige a mano cual distinguir). Clave: codigo INE de la comunidad.
+// Fuente: https://gisco-services.ec.europa.eu/distribution/v2/nuts/csv/NUTS_AT_2024.csv (copia en tests/nuts-2024.json).
+export const ZONA_MACRO: Record<string, string> = {
+  "12": "noroeste", "03": "noroeste", "06": "noroeste",             // Galicia, Asturias, Cantabria
+  "16": "noreste", "15": "noreste", "17": "noreste", "02": "noreste", // Pais Vasco, Navarra, La Rioja, Aragon
+  "13": "madrid",
+  "07": "centro", "08": "centro", "11": "centro",                    // Castilla y Leon, Castilla-La Mancha, Extremadura
+  "09": "este", "10": "este", "04": "este",                          // Cataluña, Comunitat Valenciana, Illes Balears
+  "01": "sur", "14": "sur", "18": "sur", "19": "sur",                // Andalucia, Murcia, Ceuta, Melilla
+  "05": "canarias",
 };
+export function zonaMacro(v: unknown): string {
+  return ZONA_MACRO[String(v)] ?? String(v);
+}
 
 const NS: Opcion = { v: "ns", t: "No lo sé", fija: true };
 const FRECUENCIA: Opcion[] = [
@@ -169,8 +111,7 @@ export const BLOQUES: Bloque[] = [
         { v: "chico", t: "Un chico" }, { v: "chica", t: "Una chica" }, { v: "nc", t: "Prefiero no decirlo", fija: true } ] },
       { id: "A6", texto: "¿Qué tipo de centro educativo?", tipo: "unica", opciones: [
         { v: "publico", t: "Público" }, { v: "concertado", t: "Concertado" }, { v: "privado", t: "Privado" }, NS ] },
-      { id: "A7", texto: "¿Dónde vivís?", ayuda: "Elige tu provincia. Si tu comunidad autónoma tiene una sola provincia, aparece con el nombre de la comunidad.", tipo: "lista",
-        opciones: OPCIONES_PROVINCIA },
+      { id: "A7", texto: "¿En qué comunidad o ciudad autónoma vivís?", tipo: "lista", opciones: OPCIONES_CCAA },
       { id: "A8", texto: "Tu relación con él o ella", tipo: "unica", opciones: [
         { v: "madre", t: "Madre" }, { v: "padre", t: "Padre" }, { v: "otro", t: "Otra", fija: true } ] },
       { id: "A9", texto: "Tu edad", tipo: "unica", opciones: [
@@ -314,10 +255,7 @@ export function ordenBloques(ordenCD: 1 | 2): Bloque["id"][] {
 // Dimensiones de cuota que se leen del bloque A.
 export const DIMENSIONES_CUOTA = ["A3", "A4", "A7", "A8"] as const;
 
-// Categoria de cuota de una respuesta del bloque A. Para la zona (A7) se convierte la provincia en macrozona.
+// Categoria de cuota de una respuesta del bloque A. Para la zona (A7) se convierte la comunidad en su macrozona NUTS1.
 export function categoriaCuota(dimension: string, datosA: Record<string, unknown>): string {
-  const v = String(datosA[dimension]);
-  if (dimension !== "A7") return v;
-  const ccaa = CCAA_POR_PROVINCIA[v];
-  return ccaa ? ZONA_DE_CCAA[ccaa] : v;
+  return dimension === "A7" ? zonaMacro(datosA.A7) : String(datosA[dimension]);
 }

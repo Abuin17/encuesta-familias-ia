@@ -1,0 +1,35 @@
+{
+  "fuente": "Eurostat, clasificacion NUTS 2024 (GISCO). Coincide con la NUTS 2021 para España.",
+  "url": "https://gisco-services.ec.europa.eu/distribution/v2/nuts/csv/NUTS_AT_2024.csv",
+  "descargado": "2026-09-21",
+  "nuts1": {
+    "ES1": "Noroeste",
+    "ES2": "Noreste",
+    "ES3": "Comunidad de Madrid",
+    "ES4": "Centro (ES)",
+    "ES5": "Este",
+    "ES6": "Sur",
+    "ES7": "Canarias"
+  },
+  "nuts2": {
+    "ES11": "Galicia",
+    "ES12": "Principado de Asturias",
+    "ES13": "Cantabria",
+    "ES21": "País Vasco",
+    "ES22": "Comunidad Foral de Navarra",
+    "ES23": "La Rioja",
+    "ES24": "Aragón",
+    "ES30": "Comunidad de Madrid",
+    "ES41": "Castilla y León",
+    "ES42": "Castilla-La Mancha",
+    "ES43": "Extremadura",
+    "ES51": "Cataluña",
+    "ES52": "Comunitat Valenciana",
+    "ES53": "Illes Balears",
+    "ES61": "Andalucía",
+    "ES62": "Región de Murcia",
+    "ES63": "Ciudad de Ceuta",
+    "ES64": "Ciudad de Melilla",
+    "ES70": "Canarias"
+  }
+}

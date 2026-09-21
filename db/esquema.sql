@@ -48,6 +48,8 @@ alter table contadores enable row level security;
 
 revoke all on respuestas, codigos, cuotas, contadores from anon, authenticated;
 
+-- Zona (A7): 7 macrozonas NUTS1 de Eurostat (noroeste, noreste, madrid, centro, este, sur, canarias); tope 480 = 40 % de 1.200.
+-- La aplicacion convierte la comunidad autonoma que elige la familia (codigo INE 01-19) en su macrozona.
 -- Cuotas iniciales para 1.200 respuestas brutas. Son techos, no objetivos minimos:
 -- el total de cada dimension supera 1.200 para no cerrar el campo antes de tiempo.
 -- Ajustables en cualquier momento desde el editor de tablas.
@@ -58,12 +60,13 @@ insert into cuotas (dimension, categoria, objetivo) values
   ('A4', 'chico',  700),
   ('A4', 'chica',  700),
   ('A8', 'madre',  840),
-  ('A7', 'madrid', 480),
-  ('A7', 'andalucia', 480),
-  ('A7', 'cataluna',  480),
-  ('A7', 'valencia',  480),
-  ('A7', 'norte',     480),
-  ('A7', 'resto',     480),
+  ('A7', 'madrid',   480),
+  ('A7', 'noroeste', 480),
+  ('A7', 'noreste',  480),
+  ('A7', 'centro',   480),
+  ('A7', 'este',     480),
+  ('A7', 'sur',       480),
+  ('A7', 'canarias', 480),
   ('canal', '1', 800),
   ('canal', '2', 600)
 on conflict do nothing;
