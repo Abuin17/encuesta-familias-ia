@@ -113,7 +113,7 @@ export const BLOQUES: Bloque[] = [
         { v: "publico", t: "Público" }, { v: "concertado", t: "Concertado" }, { v: "privado", t: "Privado" }, NS ] },
       { id: "A7", texto: "¿En qué comunidad o ciudad autónoma vivís?", tipo: "lista", opciones: OPCIONES_CCAA },
       { id: "A8", texto: "Tu relación con él o ella", tipo: "unica", opciones: [
-        { v: "madre", t: "Madre" }, { v: "padre", t: "Padre" }, { v: "otro", t: "Otra", fija: true } ] },
+        { v: "madre", t: "Madre" }, { v: "padre", t: "Padre" }, { v: "otro", t: "Otro", fija: true } ] },
       { id: "A9", texto: "Tu edad", tipo: "unica", opciones: [
         { v: "<35", t: "Menos de 35" }, { v: "35-44", t: "De 35 a 44" }, { v: "45-54", t: "De 45 a 54" }, { v: "55+", t: "55 o más" } ] },
       { id: "A10", texto: "Tu nivel de estudios terminado", tipo: "unica", opciones: [

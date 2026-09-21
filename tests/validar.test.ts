@@ -129,3 +129,45 @@ test("k-anonimato: las comunidades sueltas se agrupan en su macrozona", () => {
   const sola = anonimizar([...Array.from({ length: 5 }, () => fila("13")), fila("05")]); // una canaria aislada: se suprime la zona
   assert.equal(sola.filas.filter((f) => f.A7 === "").length, 1);
 });
+
+test("limpiador: telefonos en varios formatos, sin pegar la palabra siguiente", () => {
+  assert.equal(limpiarTexto("Llamad al +34 600 12 34 56 o al 0034 600123456"), "Llamad al [telefono] o al [telefono]");
+  assert.equal(limpiarTexto("Mi tel es 91.555.12.34 y el otro 6 0 0 1 2 3 4 5 6 vale"), "Mi tel es [telefono] y el otro [telefono] vale");
+  assert.equal(limpiarTexto("Tiene 14 años y saca un 7,5 en 3ºB, 100% seguro, en 2026"), "Tiene 14 años y saca un 7,5 en 3ºB, 100% seguro, en 2026");
+});
+
+test("limpiador: enlaces sin protocolo, usuarios de redes, fechas, DNI/NIE", () => {
+  const cases: [string, string[]][] = [
+    ["Está en tiktok.com/@lucia88 y en https://www.instagram.com/lucia_88?igsh=abc", ["lucia88", "lucia_88", "instagram"]],
+    ["Su usuario es @lucia_88 en Instagram", ["lucia_88"]],
+    ["Su DNI es 12345678Z y el mío X1234567L", ["12345678", "1234567L"]],
+    ["El 12/03/2026 le pusieron un cero, y el 3-4-26 otro", ["12/03/2026", "3-4-26"]],
+    ["Escribid a JUAN.PEREZ+colegio@Dominio.co.uk por favor", ["JUAN", "Dominio"]],
+  ];
+  for (const [entrada, prohibidos] of cases) { const s = limpiarTexto(entrada); for (const p of prohibidos) assert.ok(!s.includes(p), `«${s}» conserva «${p}»`); }
+  assert.equal(limpiarTexto("Usa ChatGPT.com y Gemini a diario"), "Usa [enlace] y Gemini a diario");
+});
+
+test("limpiador: apellidos con guion y tratamientos (D., Sra.) aunque empiecen frase", () => {
+  for (const [entrada, prohibidos] of [
+    ["Se llama Ana María García-López y tiene 14 años", ["López", "García", "Ana"]],
+    ["Nos dijo su tutor D. José Luis Rodríguez Pérez", ["José", "Rodríguez", "Pérez"]],
+    ["Habló la Sra. Martínez de Lengua", ["Martínez"]],
+  ] as [string, string[]][]) { const s = limpiarTexto(entrada); for (const p of prohibidos) assert.ok(!s.includes(p), `«${s}» conserva «${p}»`); }
+  assert.ok(limpiarTexto("Se llama Ana María García-López y tiene 14 años").includes("14 años"));
+  assert.equal(limpiarTexto("IA IA Gemini Copilot TikTok WhatsApp YouTube"), "IA IA Gemini Copilot TikTok WhatsApp YouTube");
+});
+
+test("limpiador: no rompe texto normal (acentos, ñ, signos, emojis, control, longitud)", () => {
+  assert.equal(limpiarTexto("😀 ¡Se lo pasa genial con la IA! 🎉"), "😀 ¡Se lo pasa genial con la IA! 🎉");
+  assert.equal(limpiarTexto("Ñu ñoño ¿verdad? — «comillas»"), "Ñu ñoño ¿verdad? — «comillas»");
+  assert.equal(limpiarTexto("línea1\nlínea2\ttab"), "línea1 línea2 tab");
+  assert.equal(limpiarTexto("\u0000null\u0007bell"), "null bell");
+  assert.equal(limpiarTexto("   "), "");
+  assert.equal(limpiarTexto("x".repeat(400)).length, 280);
+});
+
+test("A8 dice Otro, como el documento de diseño", () => {
+  const ops = BLOQUE_POR_ID.A.preguntas.find((p) => p.id === "A8")!.opciones!;
+  assert.deepEqual(ops.map((o) => `${o.v}:${o.t}`), ["madre:Madre", "padre:Padre", "otro:Otro"]);
+});
