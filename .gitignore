@@ -1,0 +1,9 @@
+node_modules
+.next
+.env*
+!.env.ejemplo
+codigos-*.csv
+export-*.csv
+*.tsbuildinfo
+next-env.d.ts
+.vercel
