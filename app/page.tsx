@@ -18,7 +18,6 @@ type Estado = {
 
 const CLAVE_ESTADO = "encuesta_ia_estado";
 const CLAVE_HECHA = "encuesta_ia_completada";
-const RESPONSABLE = process.env.NEXT_PUBLIC_RESPONSABLE || "Manu Abuín";
 const CONTACTO = process.env.NEXT_PUBLIC_CONTACTO || "";
 const INFORME = process.env.NEXT_PUBLIC_INFORME_URL || "";
 
@@ -207,7 +206,6 @@ export default function Encuesta() {
         <details className="tarjeta aviso">
           <summary>Información sobre tus datos</summary>
           <ul>
-            <li>Responsable: {RESPONSABLE}, dentro de un proyecto de investigación educativa.</li>
             <li>Finalidad: conocer el uso de la IA en las familias y publicar los resultados de forma agregada.</li>
             <li>No recogemos datos que te identifiquen. Las preguntas usan tramos (edad, zona, estudios) para que ninguna respuesta se pueda asociar a una familia.</li>
             <li>No guardamos tu IP, la fecha exacta ni datos del dispositivo. No hay cookies de seguimiento ni analítica.</li>
@@ -341,6 +339,18 @@ function PreguntaVista({ p, valor, opciones, pendiente, onCambio }: {
               </label>
             ))}
           </div>
+        )}
+
+        {p.tipo === "lista" && (
+          <select name={p.id} aria-label={p.texto} value={typeof valor === "string" ? valor : ""}
+            onChange={(ev) => onCambio(ev.target.value || undefined)}>
+            <option value="">Elige una opción</option>
+            {[...new Set(opciones.map((o) => o.grupo ?? ""))].map((g) => {
+              const delGrupo = opciones.filter((o) => (o.grupo ?? "") === g);
+              const items = delGrupo.map((o) => <option key={o.v} value={o.v}>{o.t}</option>);
+              return g ? <optgroup key={g} label={g}>{items}</optgroup> : items;
+            })}
+          </select>
         )}
 
         {p.tipo === "multiple" && (

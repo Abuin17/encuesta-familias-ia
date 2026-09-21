@@ -12,7 +12,8 @@ const azar = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
 function responder(p: Pregunta): string | string[] | number | undefined {
   const ops = (p.opciones ?? []).map((o) => o);
   switch (p.tipo) {
-    case "unica": return azar(ops).v;
+    case "unica":
+    case "lista": return azar(ops).v;
     case "escala": return (p.min ?? 0) + Math.floor(Math.random() * ((p.max ?? 10) - (p.min ?? 0) + 1));
     case "texto": return Math.random() < 0.5 ? "Mi hijo Pablo copió un trabajo con ChatGPT, llamadme al 600123456" : undefined;
     case "multiple":

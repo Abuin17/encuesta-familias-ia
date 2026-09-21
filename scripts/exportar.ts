@@ -9,7 +9,7 @@
 //     Todas las variables sin agrupar. No se comparte ni se sube a ningun sitio.
 import { writeFileSync } from "node:fs";
 import postgres from "postgres";
-import { BLOQUES, type Respuestas } from "../lib/encuesta.ts";
+import { BLOQUES, CCAA, CCAA_POR_PROVINCIA, type Respuestas } from "../lib/encuesta.ts";
 
 const K = 5;
 const CUASI = ["A7", "A3", "A4", "A6"] as const; // lo que un tercero podria saber de una familia: zona, edad, sexo, centro
@@ -53,8 +53,10 @@ export function aplanar(datos: Record<string, Respuestas>, meta: { canal: number
 }
 
 // Generalizaciones sucesivas hasta cumplir k-anonimato.
+// La zona (A7) se guarda por provincia: primero se agrupa por comunidad y luego en Madrid, Andalucia, Cataluna y otras.
 const PASOS: { col: string; mapa: Record<string, string> }[] = [
-  { col: "A7", mapa: { madrid: "madrid", andalucia: "andalucia", cataluna: "cataluna", valencia: "otras", norte: "otras", resto: "otras" } },
+  { col: "A7", mapa: CCAA_POR_PROVINCIA },
+  { col: "A7", mapa: Object.fromEntries(Object.keys(CCAA).map((c) => [c, ["madrid", "andalucia", "cataluna"].includes(c) ? c : "otras"])) },
   { col: "A6", mapa: { publico: "publico", concertado: "concertado_privado", privado: "concertado_privado", ns: "ns" } },
 ];
 

@@ -27,7 +27,8 @@ export function validarBloque(id: string, entrada: unknown): Resultado {
     const exclusivos = new Set((p.opciones ?? []).filter((o) => o.exclusiva).map((o) => o.v));
 
     switch (p.tipo) {
-      case "unica": {
+      case "unica":
+      case "lista": {
         if (typeof valor !== "string" || !permitidos.has(valor)) return { ok: false, error: `valor ${p.id}` };
         datos[p.id] = valor;
         break;

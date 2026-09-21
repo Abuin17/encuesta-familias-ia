@@ -1,4 +1,4 @@
-import { DIMENSIONES_CUOTA } from "../../../lib/encuesta.ts";
+import { DIMENSIONES_CUOTA, categoriaCuota } from "../../../lib/encuesta.ts";
 import { db, esUuid, leerJson, respuesta } from "../../../lib/servidor.ts";
 
 export const runtime = "nodejs";
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       returning canal, datos->'A' as a`;
     if (!fila) return false;
     const a = fila.a as Record<string, unknown>;
-    const pares: [string, string][] = DIMENSIONES_CUOTA.map((d) => [d, String(a[d])]);
+    const pares: [string, string][] = DIMENSIONES_CUOTA.map((d) => [d, categoriaCuota(d, a)]);
     pares.push(["canal", String(fila.canal)]);
     for (const [dimension, categoria] of pares) {
       await tx`update cuotas set actual = actual + 1 where dimension = ${dimension} and categoria = ${categoria}`;

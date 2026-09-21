@@ -125,6 +125,11 @@ input[type="text"] {
   width: 100%; font: inherit; color: inherit; background: var(--superficie);
   border: 1px solid var(--borde); border-radius: 10px; padding: 12px; letter-spacing: 0.08em; text-transform: uppercase;
 }
+select {
+  width: 100%; min-height: 48px; font: inherit; color: inherit; background: var(--superficie);
+  border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px;
+}
+select:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
 .contador { text-align: right; color: var(--suave); font-size: 0.8rem; margin-top: 4px; }
 
 .acciones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }

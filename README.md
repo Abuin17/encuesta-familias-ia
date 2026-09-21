@@ -16,7 +16,6 @@ Formulario anónimo (Next.js en Vercel + Postgres en Supabase). No guarda IP, fe
    - `DATABASE_URL`: la cadena del paso anterior.
    - `CAMPO_INICIO`: primer día de campo (AAAA-MM-DD).
    - `NEXT_PUBLIC_CONTACTO`: email de contacto que aparece en el aviso.
-   - `NEXT_PUBLIC_RESPONSABLE`: nombre del responsable.
    - `NEXT_PUBLIC_INFORME_URL` (opcional): dónde se publicarán los resultados.
 3. Despliega. La región de las funciones ya está fijada en Fráncfort (`vercel.json`).
 4. No actives Vercel Analytics ni Speed Insights.
@@ -38,6 +37,8 @@ Durante el campo, exporta el CSV interno una vez al día como copia de seguridad
 
 ## Cuotas
 Están en la tabla `cuotas` (techos por perfil). Se pueden cambiar en cualquier momento desde el editor de tablas de Supabase. Cuando un perfil llega a su techo, las nuevas familias con ese perfil ven un mensaje de agradecimiento y no se guarda nada suyo.
+
+La zona se pregunta por **provincia** (A7, código INE `01`–`52`; el desplegable las agrupa por comunidad autónoma). Las cuotas de zona (`A7` en la tabla) siguen siendo las 6 macrozonas madrid / andalucia / cataluna / valencia / norte / resto: la equivalencia provincia → macrozona está en `lib/encuesta.ts`. Si se quieren cuotas por comunidad o por provincia, hay que cambiar esa equivalencia y las filas de `cuotas` a la vez.
 
 ## Cambiar preguntas
 Todo el cuestionario está en `lib/encuesta.ts`. La misma definición la usan el formulario y la validación del servidor. No cambies preguntas con el campo abierto: rompe la comparabilidad.

@@ -1,4 +1,4 @@
-import { DIMENSIONES_CUOTA } from "../../../lib/encuesta.ts";
+import { DIMENSIONES_CUOTA, categoriaCuota } from "../../../lib/encuesta.ts";
 import { db, esUuid, leerJson, respuesta } from "../../../lib/servidor.ts";
 import { validarBloque } from "../../../lib/validar.ts";
 
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const [fila] = await sql`select canal from respuestas where id = ${j.id} and filtrada = false and completa = false`;
   if (!fila) return respuesta({ error: "estado" }, 409);
 
-  const pares: [string, string][] = DIMENSIONES_CUOTA.map((d) => [d, String(v.datos[d])]);
+  const pares: [string, string][] = DIMENSIONES_CUOTA.map((d) => [d, categoriaCuota(d, v.datos)]);
   pares.push(["canal", String(fila.canal)]);
   const dims = pares.map((p) => p[0]);
   const cats = pares.map((p) => p[1]);
