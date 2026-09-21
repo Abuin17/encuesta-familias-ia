@@ -30,62 +30,120 @@ export type Pregunta = {
 
 export type Bloque = { id: "A" | "B" | "C" | "D" | "E"; titulo: string; intro?: string; preguntas: Pregunta[] };
 
-// Comunidades y ciudades autonomas, en el orden en que se muestran en el desplegable.
-export const CCAA = {
-  andalucia: "Andalucía", aragon: "Aragón", asturias: "Asturias", baleares: "Baleares", canarias: "Canarias",
-  cantabria: "Cantabria", castilla_leon: "Castilla y León", castilla_mancha: "Castilla-La Mancha", cataluna: "Cataluña",
-  ceuta: "Ceuta", valencia: "Comunidad Valenciana", extremadura: "Extremadura", galicia: "Galicia", la_rioja: "La Rioja",
-  madrid: "Madrid", melilla: "Melilla", murcia: "Murcia", navarra: "Navarra", pais_vasco: "País Vasco",
-} as const;
-export type CcaaId = keyof typeof CCAA;
+// ---- Zona: comunidades autonomas y provincias ------------------------------------------------
+// Fuente oficial: INE, «Relación de municipios y códigos por comunidades autónomas y provincias a 1 de
+// enero de 2026» (https://www.ine.es/daco/daco42/codmun/diccionario26.xlsx) y sus listas de códigos de
+// provincias y de comunidades y ciudades autónomas (https://www.ine.es/daco/daco42/codmun/).
+// Los literales van tal como los publica el INE, que los invierte para poder ordenarlos («Balears, Illes»).
+// tests/ine-2026.json guarda una copia de la fuente y los tests comprueban que esta tabla coincide con ella.
+export const CCAA_INE: Record<string, string> = {
+  "01": "Andalucía",
+  "02": "Aragón",
+  "03": "Asturias, Principado de",
+  "04": "Balears, Illes",
+  "05": "Canarias",
+  "06": "Cantabria",
+  "07": "Castilla y León",
+  "08": "Castilla - La Mancha",
+  "09": "Cataluña",
+  "10": "Comunitat Valenciana",
+  "11": "Extremadura",
+  "12": "Galicia",
+  "13": "Madrid, Comunidad de",
+  "14": "Murcia, Región de",
+  "15": "Navarra, Comunidad Foral de",
+  "16": "País Vasco",
+  "17": "Rioja, La",
+  "18": "Ceuta",
+  "19": "Melilla",
+};
 
-// Las 52 provincias (50 mas Ceuta y Melilla). El valor guardado es el codigo INE de provincia.
-// Ya estan en el orden de visualizacion: por comunidad y, dentro de cada una, alfabetico.
-export const PROVINCIAS: { v: string; t: string; ccaa: CcaaId }[] = [
-  { v: "04", t: "Almería", ccaa: "andalucia" }, { v: "11", t: "Cádiz", ccaa: "andalucia" },
-  { v: "14", t: "Córdoba", ccaa: "andalucia" }, { v: "18", t: "Granada", ccaa: "andalucia" },
-  { v: "21", t: "Huelva", ccaa: "andalucia" }, { v: "23", t: "Jaén", ccaa: "andalucia" },
-  { v: "29", t: "Málaga", ccaa: "andalucia" }, { v: "41", t: "Sevilla", ccaa: "andalucia" },
-  { v: "22", t: "Huesca", ccaa: "aragon" }, { v: "44", t: "Teruel", ccaa: "aragon" }, { v: "50", t: "Zaragoza", ccaa: "aragon" },
-  { v: "33", t: "Asturias", ccaa: "asturias" },
-  { v: "07", t: "Baleares", ccaa: "baleares" },
-  { v: "35", t: "Las Palmas", ccaa: "canarias" }, { v: "38", t: "Santa Cruz de Tenerife", ccaa: "canarias" },
-  { v: "39", t: "Cantabria", ccaa: "cantabria" },
-  { v: "05", t: "Ávila", ccaa: "castilla_leon" }, { v: "09", t: "Burgos", ccaa: "castilla_leon" },
-  { v: "24", t: "León", ccaa: "castilla_leon" }, { v: "34", t: "Palencia", ccaa: "castilla_leon" },
-  { v: "37", t: "Salamanca", ccaa: "castilla_leon" }, { v: "40", t: "Segovia", ccaa: "castilla_leon" },
-  { v: "42", t: "Soria", ccaa: "castilla_leon" }, { v: "47", t: "Valladolid", ccaa: "castilla_leon" },
-  { v: "49", t: "Zamora", ccaa: "castilla_leon" },
-  { v: "02", t: "Albacete", ccaa: "castilla_mancha" }, { v: "13", t: "Ciudad Real", ccaa: "castilla_mancha" },
-  { v: "16", t: "Cuenca", ccaa: "castilla_mancha" }, { v: "19", t: "Guadalajara", ccaa: "castilla_mancha" },
-  { v: "45", t: "Toledo", ccaa: "castilla_mancha" },
-  { v: "08", t: "Barcelona", ccaa: "cataluna" }, { v: "17", t: "Girona", ccaa: "cataluna" },
-  { v: "25", t: "Lleida", ccaa: "cataluna" }, { v: "43", t: "Tarragona", ccaa: "cataluna" },
-  { v: "51", t: "Ceuta", ccaa: "ceuta" },
-  { v: "03", t: "Alicante/Alacant", ccaa: "valencia" }, { v: "12", t: "Castellón/Castelló", ccaa: "valencia" },
-  { v: "46", t: "Valencia/València", ccaa: "valencia" },
-  { v: "06", t: "Badajoz", ccaa: "extremadura" }, { v: "10", t: "Cáceres", ccaa: "extremadura" },
-  { v: "15", t: "A Coruña", ccaa: "galicia" }, { v: "27", t: "Lugo", ccaa: "galicia" },
-  { v: "32", t: "Ourense", ccaa: "galicia" }, { v: "36", t: "Pontevedra", ccaa: "galicia" },
-  { v: "26", t: "La Rioja", ccaa: "la_rioja" },
-  { v: "28", t: "Madrid", ccaa: "madrid" },
-  { v: "52", t: "Melilla", ccaa: "melilla" },
-  { v: "30", t: "Murcia", ccaa: "murcia" },
-  { v: "31", t: "Navarra", ccaa: "navarra" },
-  { v: "01", t: "Araba/Álava", ccaa: "pais_vasco" }, { v: "48", t: "Bizkaia", ccaa: "pais_vasco" },
-  { v: "20", t: "Gipuzkoa", ccaa: "pais_vasco" },
+// [codigo de provincia, literal INE, codigo de comunidad INE]
+export const PROVINCIAS_INE: [string, string, string][] = [
+  ["01", "Araba/Álava", "16"],
+  ["02", "Albacete", "08"],
+  ["03", "Alicante/Alacant", "10"],
+  ["04", "Almería", "01"],
+  ["05", "Ávila", "07"],
+  ["06", "Badajoz", "11"],
+  ["07", "Balears, Illes", "04"],
+  ["08", "Barcelona", "09"],
+  ["09", "Burgos", "07"],
+  ["10", "Cáceres", "11"],
+  ["11", "Cádiz", "01"],
+  ["12", "Castellón/Castelló", "10"],
+  ["13", "Ciudad Real", "08"],
+  ["14", "Córdoba", "01"],
+  ["15", "Coruña, A", "12"],
+  ["16", "Cuenca", "08"],
+  ["17", "Girona", "09"],
+  ["18", "Granada", "01"],
+  ["19", "Guadalajara", "08"],
+  ["20", "Gipuzkoa", "16"],
+  ["21", "Huelva", "01"],
+  ["22", "Huesca", "02"],
+  ["23", "Jaén", "01"],
+  ["24", "León", "07"],
+  ["25", "Lleida", "09"],
+  ["26", "Rioja, La", "17"],
+  ["27", "Lugo", "12"],
+  ["28", "Madrid", "13"],
+  ["29", "Málaga", "01"],
+  ["30", "Murcia", "14"],
+  ["31", "Navarra", "15"],
+  ["32", "Ourense", "12"],
+  ["33", "Asturias", "03"],
+  ["34", "Palencia", "07"],
+  ["35", "Palmas, Las", "05"],
+  ["36", "Pontevedra", "12"],
+  ["37", "Salamanca", "07"],
+  ["38", "Santa Cruz de Tenerife", "05"],
+  ["39", "Cantabria", "06"],
+  ["40", "Segovia", "07"],
+  ["41", "Sevilla", "01"],
+  ["42", "Soria", "07"],
+  ["43", "Tarragona", "09"],
+  ["44", "Teruel", "02"],
+  ["45", "Toledo", "08"],
+  ["46", "Valencia/València", "10"],
+  ["47", "Valladolid", "07"],
+  ["48", "Bizkaia", "16"],
+  ["49", "Zamora", "07"],
+  ["50", "Zaragoza", "02"],
+  ["51", "Ceuta", "18"],
+  ["52", "Melilla", "19"],
 ];
 
-export const CCAA_POR_PROVINCIA: Record<string, CcaaId> = Object.fromEntries(PROVINCIAS.map((p) => [p.v, p.ccaa]));
+const sinTildes = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+const porLiteral = (a: string, b: string) => { const x = sinTildes(a), y = sinTildes(b); return x < y ? -1 : x > y ? 1 : 0; };
+
+// Nombre tal como se dice y se escribe: «Balears, Illes» -> «Illes Balears»; «Castilla - La Mancha» -> «Castilla-La Mancha».
+export function nombreNatural(literalIne: string): string {
+  return literalIne.replace(/ - /g, "-").split(", ").reverse().join(" ");
+}
+
+export const CCAA_POR_PROVINCIA: Record<string, string> = Object.fromEntries(PROVINCIAS_INE.map(([p, , c]) => [p, c]));
+
+// Opciones del desplegable de provincia, por comunidad (ordenadas como en el INE) y, dentro, por provincia.
+// Si la comunidad tiene una sola provincia se muestra una unica opcion con el nombre de la comunidad:
+// asi no aparece nunca «Asturias > Asturias» ni «Illes Balears > Illes Balears». El valor guardado es siempre la provincia.
+function opcionesProvincia(): Opcion[] {
+  const out: Opcion[] = [];
+  for (const [cod, literal] of Object.entries(CCAA_INE).sort((a, b) => porLiteral(a[1], b[1]))) {
+    const provs = PROVINCIAS_INE.filter((p) => p[2] === cod).sort((a, b) => porLiteral(a[1], b[1]));
+    if (provs.length === 1) out.push({ v: provs[0][0], t: nombreNatural(literal) });
+    else for (const [v, l] of provs) out.push({ v, t: nombreNatural(l), grupo: nombreNatural(literal) });
+  }
+  return out;
+}
+export const OPCIONES_PROVINCIA = opcionesProvincia();
 
 // Las cuotas de zona de la base de datos (A7) siguen siendo las 6 macrozonas de siempre.
 // Se calculan desde la provincia, asi las cuotas no cambian aunque se pregunte por provincia.
-const ZONA_DE_CCAA: Record<CcaaId, string> = {
-  madrid: "madrid", andalucia: "andalucia", cataluna: "cataluna", valencia: "valencia",
-  galicia: "norte", asturias: "norte", cantabria: "norte", pais_vasco: "norte", navarra: "norte",
-  la_rioja: "norte", castilla_leon: "norte", aragon: "norte",
-  castilla_mancha: "resto", extremadura: "resto", murcia: "resto", baleares: "resto", canarias: "resto",
-  ceuta: "resto", melilla: "resto",
+const ZONA_DE_CCAA: Record<string, string> = {
+  "13": "madrid", "01": "andalucia", "09": "cataluna", "10": "valencia",
+  "12": "norte", "03": "norte", "06": "norte", "16": "norte", "15": "norte", "17": "norte", "07": "norte", "02": "norte",
+  "08": "resto", "11": "resto", "14": "resto", "04": "resto", "05": "resto", "18": "resto", "19": "resto",
 };
 
 const NS: Opcion = { v: "ns", t: "No lo sé", fija: true };
@@ -111,8 +169,8 @@ export const BLOQUES: Bloque[] = [
         { v: "chico", t: "Un chico" }, { v: "chica", t: "Una chica" }, { v: "nc", t: "Prefiero no decirlo", fija: true } ] },
       { id: "A6", texto: "¿Qué tipo de centro educativo?", tipo: "unica", opciones: [
         { v: "publico", t: "Público" }, { v: "concertado", t: "Concertado" }, { v: "privado", t: "Privado" }, NS ] },
-      { id: "A7", texto: "¿En qué provincia vivís?", ayuda: "Elige la provincia donde vivís habitualmente.", tipo: "lista",
-        opciones: PROVINCIAS.map((p) => ({ v: p.v, t: p.t, grupo: CCAA[p.ccaa] })) },
+      { id: "A7", texto: "¿Dónde vivís?", ayuda: "Elige tu provincia. Si tu comunidad autónoma tiene una sola provincia, aparece con el nombre de la comunidad.", tipo: "lista",
+        opciones: OPCIONES_PROVINCIA },
       { id: "A8", texto: "Tu relación con él o ella", tipo: "unica", opciones: [
         { v: "madre", t: "Madre" }, { v: "padre", t: "Padre" }, { v: "otro", t: "Otra", fija: true } ] },
       { id: "A9", texto: "Tu edad", tipo: "unica", opciones: [

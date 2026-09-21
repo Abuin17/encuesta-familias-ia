@@ -46,6 +46,18 @@ async function post(ruta: string, cuerpo: unknown): Promise<{ status: number; js
   return { status: r.status, json };
 }
 
+// Agrupa las opciones consecutivas de un mismo grupo sin alterar el orden; las que no tienen grupo van sueltas.
+function segmentos(opciones: Opcion[]): [string, Opcion[]][] {
+  const out: [string, Opcion[]][] = [];
+  for (const o of opciones) {
+    const g = o.grupo ?? "";
+    const ultimo = out[out.length - 1];
+    if (g && ultimo && ultimo[0] === g) ultimo[1].push(o);
+    else out.push([g, [o]]);
+  }
+  return out;
+}
+
 const INICIAL: Estado = { fase: "cargando", canal: "redes", sesion: null, paso: 0, respuestas: {}, orden: {}, inicio: null };
 
 export default function Encuesta() {
@@ -345,9 +357,8 @@ function PreguntaVista({ p, valor, opciones, pendiente, onCambio }: {
           <select name={p.id} aria-label={p.texto} value={typeof valor === "string" ? valor : ""}
             onChange={(ev) => onCambio(ev.target.value || undefined)}>
             <option value="">Elige una opción</option>
-            {[...new Set(opciones.map((o) => o.grupo ?? ""))].map((g) => {
-              const delGrupo = opciones.filter((o) => (o.grupo ?? "") === g);
-              const items = delGrupo.map((o) => <option key={o.v} value={o.v}>{o.t}</option>);
+            {segmentos(opciones).map(([g, ops]) => {
+              const items = ops.map((o) => <option key={o.v} value={o.v}>{o.t}</option>);
               return g ? <optgroup key={g} label={g}>{items}</optgroup> : items;
             })}
           </select>
