@@ -219,6 +219,7 @@ export default function Encuesta() {
         <details className="tarjeta aviso">
           <summary>Información sobre tus datos</summary>
           <ul>
+            <li>Responsable: Manu Abuín.</li>
             <li>Finalidad: conocer el uso de la IA en las familias y publicar los resultados de forma agregada.</li>
             <li>No recogemos datos que te identifiquen. Las preguntas usan tramos (edad, zona, estudios) para que ninguna respuesta se pueda asociar a una familia.</li>
             <li>No guardamos tu IP, la fecha exacta ni datos del dispositivo. No hay cookies de seguimiento ni analítica.</li>
