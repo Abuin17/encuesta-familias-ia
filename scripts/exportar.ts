@@ -10,11 +10,12 @@
 import { writeFileSync } from "node:fs";
 import postgres from "postgres";
 import { BLOQUES, ZONA_MACRO, type Respuestas } from "../lib/encuesta.ts";
+import { libroCodigos } from "./libro-codigos.ts";
 
 const K = 5;
 const CUASI = ["A7", "A3", "A4", "A6"] as const; // lo que un tercero podria saber de una familia: zona, edad, sexo, centro
 
-type Fila = Record<string, string | number>;
+export type Fila = Record<string, string | number>;
 
 export function aplanar(datos: Record<string, Respuestas>, meta: { canal: number; semana: number; orden_cd: number; duracion: number | null }): Fila {
   const f: Fila = {
@@ -114,14 +115,15 @@ async function main() {
   const fecha = new Date().toISOString().slice(0, 10);
   if (interno) {
     const fichero = `export-interno-${fecha}.csv`;
-    writeFileSync(fichero, csv(planas));
+    writeFileSync(fichero, csv(planas.map(libroCodigos)));
     console.log(`${planas.length} respuestas completas en ${fichero}. USO INTERNO: no compartir ni subir a ningun sitio.`);
+    console.log("PESO no se incluye: se calcula en el analisis final (raking), no en esta exportacion.");
     return;
   }
   const sinTexto = planas.map(({ C5: _c5, ...resto }) => resto as Fila);
   const { filas, informe } = anonimizar(sinTexto);
   const fichero = `export-compartir-${fecha}.csv`;
-  writeFileSync(fichero, csv(filas));
+  writeFileSync(fichero, csv(filas.map(libroCodigos)));
   console.log(`${filas.length} respuestas completas exportadas a ${fichero} (sin texto libre)`);
   for (const l of informe) console.log(`k-anonimato: ${l}`);
 }
